@@ -35,6 +35,7 @@ In traditional digital governance, transparency and privacy are fundamentally in
 | **Demo Video Presentation** | [Watch Demo Video (Google Drive)](https://drive.google.com/file/d/1Ty18SAmtH14TcB1tsIDad2aEjJk33IBA/view?usp=sharing) / Local: `assets/demovideo.mp4` |
 | **Public Brand Presence (X Profile)** | [@DeepakSinghCode on X](https://x.com/DeepakSinghCode) |
 | **Launch Announcement (X Post)** | [View Launch Post on X](https://x.com/DeepakSinghCode/status/2098513545545789544?s=20) |
+| **Security & Privacy Audit** | [Read Full Audit Report (AUDIT.md)](AUDIT.md) |
 | **GitHub Repository** | [https://github.com/codePaji/VaultProof](https://github.com/codePaji/VaultProof) |
 
 ---
@@ -294,22 +295,25 @@ Navigate to `http://localhost:5173`. Ensure your 1AM wallet browser extension is
 
 ## Security Audit & Verification Suite
 
-During the feature development and post-approval audit sprint, the following guardrails and features were implemented:
+A comprehensive security, privacy, and cryptographic audit was performed and documented in [**AUDIT.md**](AUDIT.md). The audit examined the public ledger visibility boundaries, zero-knowledge witness isolation, sybil resistance, and domain-separated nullifiers across both `contracts/voting.compact` and the next-generation `contracts/governance_v2.compact`.
 
-1. **Address Format Validation:** Enforces exact 64-character hexadecimal parsing with optional `0x` normalization, rejecting malformed contract queries.
-2. **Entropy Checking:** Prevents trivial (all-zero or repetitive) voter secrets from entering the ZK circuit, mitigating nullifier collision risks.
-3. **Receipt Checksums:** Implements 32-bit polynomial rolling checksums for client-side audit receipts, allowing users to verify their ballot commitment on-chain without exposing their vote choice.
-4. **Admin Route Hardening:** Fixed unhandled context references and added validation preventing empty contract addresses from executing admin circuits.
+### Key Guardrails & Security Findings:
+1. **Domain-Separated Cryptographic Nullifiers:** Employs `persistentHash<Vector<2, Bytes<32>>>([pad(32, "vaultproof:voter:v1"), sk])` to guarantee deterministic sybil resistance while preventing cross-domain collision with admin public keys.
+2. **Entropy Checking & Weak-Seed Protection:** Rejects low-entropy (all-zero or trivial sequence) secrets before proof generation, protecting voters from rainbow-table preimage reconstruction.
+3. **Receipt Checksums & Tamper Detection:** Verifiable cryptographic receipts with polynomial checksums ensure voters can prove valid ballot inclusion without leaking their private voting choice.
+4. **Enhanced Multi-Choice Governance (`governance_v2.compact`):** Extends contract logic with multi-option voting (Yes / No / Abstain), quorum threshold assertions, and proposal-scoped nullifier binding.
 
-Run the security test suite at any time:
+Run the unit and contract logic test suite:
 ```bash
 yarn test:unit
 ```
 ```
- ✓ src/test/security_and_features.test.ts (14 tests) 18ms
- Test Files  1 passed (1)
-      Tests  14 passed (14)
-   Duration  453ms
+ ✓ src/test/security_and_features.test.ts (15 tests) 13ms
+ ✓ src/test/contract_logic.test.ts (9 tests) 27ms
+
+ Test Files  2 passed (2)
+      Tests  24 passed (24)
+   Duration  297ms
 ```
 
 ---
