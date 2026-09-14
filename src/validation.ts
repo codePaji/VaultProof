@@ -141,3 +141,20 @@ export function generateVoteReceipt(
     checksum,
   };
 }
+
+/**
+ * Verifies the cryptographic integrity and checksum of a VoteReceipt.
+ */
+export function verifyVoteReceipt(receipt: VoteReceipt): boolean {
+  if (!receipt || !receipt.checksum || !receipt.contractAddress || !receipt.nullifierHash) {
+    return false;
+  }
+  const payload = `${receipt.contractAddress}:${receipt.nullifierHash}:${receipt.proposalId}:${receipt.choice}:${receipt.timestamp}`;
+  let checksumVal = 0;
+  for (let i = 0; i < payload.length; i++) {
+    checksumVal = (checksumVal * 31 + payload.charCodeAt(i)) >>> 0;
+  }
+  const expectedChecksum = checksumVal.toString(16).padStart(8, '0');
+  return receipt.checksum === expectedChecksum;
+}
+

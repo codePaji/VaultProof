@@ -5,6 +5,7 @@ import {
   validateVoteParams,
   computeVotingAnalytics,
   generateVoteReceipt,
+  verifyVoteReceipt,
 } from '../validation.js';
 
 describe('VaultProof Security & Validation Engine', () => {
@@ -121,6 +122,25 @@ describe('VaultProof Security & Validation Engine', () => {
       expect(receipt.checksum).toBeDefined();
       expect(receipt.checksum.length).toBe(8);
       expect(Date.parse(receipt.timestamp)).not.toBeNaN();
+      expect(verifyVoteReceipt(receipt)).toBe(true);
+    });
+
+    it('rejects tampered receipts with modified parameters or invalid checksum', () => {
+      const receipt = generateVoteReceipt(
+        '39767f264df7b2da4ea9ce24b3900f148517c564ec9efbffecad33edcd33332f',
+        'a1b2c3d4e5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f90',
+        0,
+        true,
+        'preprod'
+      );
+
+      // Tampered choice
+      const tamperedReceipt = { ...receipt, choice: false };
+      expect(verifyVoteReceipt(tamperedReceipt)).toBe(false);
+
+      // Tampered checksum
+      const badChecksumReceipt = { ...receipt, checksum: 'badbeef0' };
+      expect(verifyVoteReceipt(badChecksumReceipt)).toBe(false);
     });
   });
 });
