@@ -41,6 +41,9 @@ jobs:
       - name: Run unit & cryptographic security tests
         run: yarn test:unit
 
+      - name: Install frontend dependencies
+        run: npm --prefix frontend install --no-audit --no-fund
+
       - name: Build frontend UI bundle
         run: yarn build
 
