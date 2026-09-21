@@ -5,7 +5,7 @@
 [![Midnight Network](https://img.shields.io/badge/Network-Midnight%20Preprod-00E5FF?style=for-the-badge&logo=polkadot&logoColor=black)](https://midnight.network)
 [![Language](https://img.shields.io/badge/Language-Compact%20v0.31.0-FF6B00?style=for-the-badge)](https://midnight.network)
 [![Framework](https://img.shields.io/badge/Frontend-React%20%7C%20Vite%20%7C%20Tailwind-06B6D4?style=for-the-badge&logo=react)](https://vite.dev)
-[![Tested With](https://img.shields.io/badge/Tests-14%2B%20Passing%20(Vitest)-10B981?style=for-the-badge&logo=vitest)](https://vitest.dev)
+[![Tested With](https://img.shields.io/badge/Tests-24%2B%20Passing%20(Vitest)-10B981?style=for-the-badge&logo=vitest)](https://vitest.dev)
 [![Hackathon Level](https://img.shields.io/badge/Progression-Levels%201--4%20Complete-8B5CF6?style=for-the-badge)](#hackathon-progression-levels-14)
 [![Live Demo](https://img.shields.io/badge/Deployment-Live%20on%20Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://vermillion-bonbon-14c327.netlify.app/)
 
@@ -205,7 +205,7 @@ This project satisfies all criteria across the official Midnight "New Moon to Fu
 ### Level 3: Production-Grade dApp (First Quarter)
 - [x] **Approved Problem Statement:** **Private Voting** (anonymous ballots with publicly verifiable tallies).
 - [x] **Comprehensive Automated Tests:** 
-  - 14 automated unit tests verifying address format, entropy, boundaries, quorum math, and receipt verification (`yarn test:unit`).
+  - 24 automated unit tests verifying address format, entropy, boundaries, quorum math, nullifier uniqueness, and receipt verification (`yarn test:unit`).
   - End-to-end integration test suite running against local Midnight devnet (`yarn test:local`).
 - [x] **CI/CD Pipeline Running:** GitHub Actions workflow ([`.github/workflows/ci.yaml`](.github/workflows/ci.yaml)) compiling circuits, running local docker services, and verifying test suites.
 - [x] **Documented Privacy Model:** Comprehensive observer matrix and witness boundary documentation.
@@ -221,11 +221,20 @@ This project satisfies all criteria across the official Midnight "New Moon to Fu
 
 ## Project Showcase & Visual Proofs
 
-### Web Application Interface
-*Interactive ballot voting interface featuring zero-knowledge proof generation, real-time quorum progress telemetry, and cryptographic receipt generator.*
+### Web Application Interface (Claude Directory Design System)
+*High-contrast Obsidian & Electric Cyan interface featuring zero-knowledge proof generation, real-time quorum telemetry, split-bar tally analytics, and cryptographic receipt validation.*
 
-![Web UI 1](assets/ui1.png)
-![Web UI 2](assets/ui2.png)
+#### 1. Landing Hero & Protocol Telemetry
+![Landing Page & Live Network Telemetry](assets/ui1.png)
+
+#### 2. Institutional Voting Booth & Client-Side Proving
+![Zero-Knowledge Voting Interface](assets/ui2.png)
+
+#### 3. Governance Analytics & Tally Breakdown
+![Governance Analytics & Real-Time Quorum](assets/ui3.png)
+
+#### 4. Obsidian Control Plane & Circuit Administration
+![Admin Control Plane & Poll Management](assets/ui4.png)
 
 ### Mobile Responsive Interface
 *Fully responsive layout compatible with mobile viewports and tablet devices.*
