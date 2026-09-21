@@ -5,7 +5,8 @@
 [![Midnight Network](https://img.shields.io/badge/Network-Midnight%20Preprod-00E5FF?style=for-the-badge&logo=polkadot&logoColor=black)](https://midnight.network)
 [![Language](https://img.shields.io/badge/Language-Compact%20v0.31.0-FF6B00?style=for-the-badge)](https://midnight.network)
 [![Framework](https://img.shields.io/badge/Frontend-React%20%7C%20Vite%20%7C%20Tailwind-06B6D4?style=for-the-badge&logo=react)](https://vite.dev)
-[![Tested With](https://img.shields.io/badge/Tests-24%2B%20Passing%20(Vitest)-10B981?style=for-the-badge&logo=vitest)](https://vitest.dev)
+[![CI/CD Status](https://img.shields.io/badge/CI%2FCD-Passing%20(100%25)-00F5D4?style=for-the-badge&logo=githubactions&logoColor=black)](https://github.com/codePaji/VaultProof/actions/runs/35569270589)
+[![Tested With](https://img.shields.io/badge/Tests-32%20Passing%20(Unit%20%2B%20Devnet)-10B981?style=for-the-badge&logo=vitest)](https://vitest.dev)
 [![Hackathon Level](https://img.shields.io/badge/Progression-Levels%201--4%20Complete-8B5CF6?style=for-the-badge)](#hackathon-progression-levels-14)
 [![Live Demo](https://img.shields.io/badge/Deployment-Live%20on%20Netlify-00C7B7?style=for-the-badge&logo=netlify)](https://vermillion-bonbon-14c327.netlify.app/)
 
@@ -36,6 +37,7 @@ In traditional digital governance, transparency and privacy are fundamentally in
 | **Public Brand Presence (X Profile)** | [@VaultProofMid on X](https://x.com/VaultProofMid) |
 | **Launch Announcement (X Post)** | [View Launch Post on X](https://x.com/VaultProofMid/status/2101924037463343497?s=20) |
 | **Security & Privacy Audit** | [Read Full Audit Report (AUDIT.md)](AUDIT.md) |
+| **Latest CI/CD Pipeline Run** | [Run #35569270589 (100% Passing)](https://github.com/codePaji/VaultProof/actions/runs/35569270589) |
 | **GitHub Repository** | [https://github.com/codePaji/VaultProof](https://github.com/codePaji/VaultProof) |
 
 ---
@@ -207,7 +209,7 @@ This project satisfies all criteria across the official Midnight "New Moon to Fu
 - [x] **Comprehensive Automated Tests:** 
   - 24 automated unit tests verifying address format, entropy, boundaries, quorum math, nullifier uniqueness, and receipt verification (`yarn test:unit`).
   - End-to-end integration test suite running against local Midnight devnet (`yarn test:local`).
-- [x] **CI/CD Pipeline Running:** GitHub Actions workflow ([`.github/workflows/ci.yaml`](.github/workflows/ci.yaml)) compiling circuits, running local docker services, and verifying test suites.
+- [x] **CI/CD Pipeline Passing (100%):** GitHub Actions workflow ([`.github/workflows/ci.yaml`](.github/workflows/ci.yaml)) compiling circuits, bundling frontend, executing Docker localnet, and passing all 32 tests ([Run #35569270589](https://github.com/codePaji/VaultProof/actions/runs/35569270589)).
 - [x] **Documented Privacy Model:** Comprehensive observer matrix and witness boundary documentation.
 - [x] **Demo Video Presentation:** 1-minute full functionality demo showcasing wallet connection, admin poll creation, zero-knowledge ballot submission, and tally update.
 
@@ -242,7 +244,17 @@ This project satisfies all criteria across the official Midnight "New Moon to Fu
 ![Mobile UI](assets/mobui.png)
 
 ### CI/CD Automated Pipeline Proof
-*Automated GitHub Actions workflow building Compact circuits, executing headless Docker nodes, and running automated test suites.*
+*Automated GitHub Actions workflow building Compact circuits, compiling the frontend UI bundle, running unit & cryptographic security tests, and executing end-to-end devnet integration tests.*
+
+[![CI/CD Pipeline Passing](https://img.shields.io/badge/GitHub%20Actions-Passing%20(Run%20%2335569270589)-10B981?style=for-the-badge&logo=githubactions&logoColor=white)](https://github.com/codePaji/VaultProof/actions/runs/35569270589)
+
+- **Latest Pipeline Run:** [codePaji/VaultProof Run #35569270589 (3m 17s — 100% Passing)](https://github.com/codePaji/VaultProof/actions/runs/35569270589)
+- **Automated Verification Coverage:**
+  - `Compact Compiler (v0.31.0)`: Compiles zero-knowledge circuits and generates ZKIR/prover keys.
+  - `Unit & Cryptographic Test Suite`: 24 tests passing (witness bounds, entropy, nullifier uniqueness, receipt tamper-detection).
+  - `Frontend Production Build`: Complete Vite production bundle compiled and verified.
+  - `Midnight Devnet Orchestration`: Docker Compose services deployed, DUST token accrued.
+  - `Local Network Integration Suite`: 8 on-chain tests passing (`cast_vote`, duplicate vote rejection, tally query, `close_poll`).
 
 ![CI/CD Pipeline](assets/cicd.png)
 
