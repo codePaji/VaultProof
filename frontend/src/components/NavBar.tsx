@@ -1,75 +1,100 @@
+import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useWallet } from '../contexts/WalletContext';
-import WalletBanner from './WalletBanner';
-
-const VaultProofLogo = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
-    <path d="M16 7V5a4 4 0 0 0-8 0v2" />
-    <line x1="12" y1="11" x2="12" y2="15" />
-    <line x1="10" y1="13" x2="14" y2="13" />
-  </svg>
-);
+import Logo from './Logo';
+import { Vote, BarChart3, Info, ShieldCheck, Wallet, ChevronDown, CheckCircle2 } from 'lucide-react';
 
 export default function NavBar() {
   const location = useLocation();
-  const { state } = useWallet();
+  const { isConnected, isConnecting, address, connect, disconnect } = useWallet();
 
   const isActive = (path: string) => location.pathname === path;
 
+  // Format address (0x1234...5678)
+  const formatAddress = (addr: string) => {
+    if (!addr) return '';
+    const clean = addr.replace(/^0x/, '');
+    return `${clean.slice(0, 6)}...${clean.slice(-4)}`;
+  };
+
   return (
-    <nav className="navbar" id="main-nav">
-      <div className="navbar-container">
-        <Link to="/" className="navbar-logo" id="nav-logo">
-          <VaultProofLogo />
-          VaultProof
+    <header className="floating-nav-wrapper">
+      <nav className="floating-navbar">
+        {/* Brand Logo */}
+        <Link to="/" className="inline-flex items-center">
+          <Logo size={32} variant="full" />
         </Link>
 
-        <div className="navbar-links">
-          <Link to="/" className={`nav-item ${isActive('/') ? 'active' : ''}`} id="nav-home">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
-            </svg>
-            <span className="nav-item-text">Home</span>
+        {/* Center Route Links */}
+        <div className="nav-links-cluster">
+          <Link
+            to="/"
+            className={`nav-link-pill ${isActive('/') ? 'active' : ''}`}
+          >
+            Home
           </Link>
-
-          <Link to="/vote" className={`nav-item ${isActive('/vote') ? 'active' : ''}`} id="nav-vote">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
-              <polyline points="22 4 12 14.01 9 11.01" />
-            </svg>
-            <span className="nav-item-text">Vote</span>
+          <Link
+            to="/vote"
+            className={`nav-link-pill ${isActive('/vote') ? 'active' : ''}`}
+          >
+            <Vote size={15} />
+            Vote
           </Link>
-
-          <Link to="/results" className={`nav-item ${isActive('/results') ? 'active' : ''}`} id="nav-results">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <line x1="18" y1="20" x2="18" y2="10" />
-              <line x1="12" y1="20" x2="12" y2="4" />
-              <line x1="6" y1="20" x2="6" y2="14" />
-            </svg>
-            <span className="nav-item-text">Results</span>
+          <Link
+            to="/results"
+            className={`nav-link-pill ${isActive('/results') ? 'active' : ''}`}
+          >
+            <BarChart3 size={15} />
+            Results
           </Link>
-
-          <Link to="/about" className={`nav-item ${isActive('/about') ? 'active' : ''}`} id="nav-about">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <circle cx="12" cy="12" r="10" />
-              <line x1="12" y1="16" x2="12" y2="12" />
-              <line x1="12" y1="8" x2="12.01" y2="8" />
-            </svg>
-            <span className="nav-item-text">About</span>
+          <Link
+            to="/admin"
+            className={`nav-link-pill ${isActive('/admin') ? 'active' : ''}`}
+          >
+            <ShieldCheck size={15} />
+            Admin
           </Link>
-
-          <Link to="/admin" className={`nav-item ${isActive('/admin') ? 'active' : ''}`} id="nav-admin">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
-              <circle cx="12" cy="12" r="3" />
-            </svg>
-            <span className="nav-item-text">Admin</span>
+          <Link
+            to="/about"
+            className={`nav-link-pill ${isActive('/about') ? 'active' : ''}`}
+          >
+            <Info size={15} />
+            About
           </Link>
         </div>
 
-        <WalletBanner />
-      </div>
-    </nav>
+        {/* Right Status & Wallet Chip */}
+        <div className="flex items-center gap-3">
+          {/* Live Network Status Pill */}
+          <div className="nav-status-pill hidden md:inline-flex" title="Connected to Midnight Preprod">
+            <span className="nav-status-dot" />
+            <span>Preprod</span>
+          </div>
+
+          {/* Wallet Action Button */}
+          {isConnected && address ? (
+            <div className="inline-flex items-center gap-2">
+              <button
+                onClick={disconnect}
+                className="btn btn-secondary btn-sm font-mono text-xs flex items-center gap-1.5"
+                title="Click to disconnect"
+              >
+                <CheckCircle2 size={13} className="text-emerald-400" />
+                <span>{formatAddress(address)}</span>
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={connect}
+              disabled={isConnecting}
+              className="btn btn-primary btn-sm flex items-center gap-1.5"
+            >
+              <Wallet size={14} />
+              <span>{isConnecting ? 'Connecting...' : 'Connect Wallet'}</span>
+            </button>
+          )}
+        </div>
+      </nav>
+    </header>
   );
 }

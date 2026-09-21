@@ -33,8 +33,8 @@ In traditional digital governance, transparency and privacy are fundamentally in
 | **1AM Explorer Contract Link** | [View Contract Page on 1AM Explorer](https://explorer.1am.xyz/contract/39767f264df7b2da4ea9ce24b3900f148517c564ec9efbffecad33edcd33332f?network=preprod) |
 | **Deployment Transaction Hash** | [`fb3d589a96887201ef318c4128a0a534ae582b2e26ae8051381b70f4e805ab23`](https://explorer.1am.xyz/tx/fb3d589a96887201ef318c4128a0a534ae582b2e26ae8051381b70f4e805ab23?network=preprod) |
 | **Demo Video Presentation** | [Watch Demo Video (Google Drive)](https://drive.google.com/file/d/1Ty18SAmtH14TcB1tsIDad2aEjJk33IBA/view?usp=sharing) / Local: `assets/demovideo.mp4` |
-| **Public Brand Presence (X Profile)** | [@DeepakSinghCode on X](https://x.com/DeepakSinghCode) |
-| **Launch Announcement (X Post)** | [View Launch Post on X](https://x.com/DeepakSinghCode/status/2098513545545789544?s=20) |
+| **Public Brand Presence (X Profile)** | [@VaultProofMid on X](https://x.com/VaultProofMid) |
+| **Launch Announcement (X Post)** | [View Launch Post on X](https://x.com/VaultProofMid/status/2101924037463343497?s=20) |
 | **Security & Privacy Audit** | [Read Full Audit Report (AUDIT.md)](AUDIT.md) |
 | **GitHub Repository** | [https://github.com/codePaji/VaultProof](https://github.com/codePaji/VaultProof) |
 
@@ -215,7 +215,7 @@ This project satisfies all criteria across the official Midnight "New Moon to Fu
 - [x] **Live MVP on Preprod:** Fully functional dApp operating on the Midnight Preprod network.
 - [x] **In-Browser Admin Portal:** Built-in contract deployer avoiding developer machine out-of-memory (OOM) crashes by delegating proof generation to connected 1AM wallet.
 - [x] **Comprehensive Documentation:** Full setup guide, master troubleshooting guide (`MIDNIGHT_MASTER_GUIDE.md`), and developer quickstart.
-- [x] **Public Brand Presence:** Official project profile & launch post published on X: [@DeepakSinghCode](https://x.com/DeepakSinghCode) ([Launch Announcement Post](https://x.com/DeepakSinghCode/status/2098513545545789544?s=20)).
+- [x] **Public Brand Presence:** Official project profile & launch post published on X: [@VaultProofMid](https://x.com/VaultProofMid) ([Launch Announcement Post](https://x.com/VaultProofMid/status/2101924037463343497?s=20)).
 
 ---
 

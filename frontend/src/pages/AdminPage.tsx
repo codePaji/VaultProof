@@ -1,10 +1,23 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { CompiledContract } from '@midnight-ntwrk/compact-js';
+import React, { useState, useCallback } from 'react';
 import { createUnprovenDeployTx, submitTxAsync, createUnprovenCallTx } from '@midnight-ntwrk/midnight-js-contracts';
 import { sampleSigningKey } from '@midnight-ntwrk/compact-runtime';
-import { BrowserCompiledVotingContract, Contract } from '../contract';
+import { BrowserCompiledVotingContract } from '../contract';
 import { useWallet } from '../contexts/WalletContext';
-import { Settings, Loader2, CheckCircle, AlertCircle, Lock, Copy, ExternalLink, ShieldAlert } from 'lucide-react';
+import { 
+  Settings, 
+  Loader2, 
+  CheckCircle2, 
+  AlertCircle, 
+  Lock, 
+  Copy, 
+  ExternalLink, 
+  ShieldAlert, 
+  Check, 
+  Terminal, 
+  Rocket, 
+  Database,
+  Cpu
+} from 'lucide-react';
 import { config } from '../config';
 import { validateMidnightAddress } from '../lib/validation';
 
@@ -20,7 +33,7 @@ function deriveAdminKey(seedHex: string): Uint8Array {
 }
 
 export default function AdminPage() {
-  const { session, isConnected, connect } = useWallet();
+  const { session, isConnected, isConnecting, connect } = useWallet();
   const [status, setStatus] = useState<'idle' | 'deploying' | 'closing' | 'success' | 'error'>('idle');
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [deployedAddress, setDeployedAddress] = useState<string | null>(
@@ -90,13 +103,11 @@ export default function AdminPage() {
         contractAddress: deployedAddress,
         circuitId: 'close_poll',
         args: [],
-        privateStateId: 'AdminState',
-        initialPrivateState: {
-          adminSecret: adminKeyBytes,
-        },
+        privateStateId: 'AdminState_' + ADMIN_SECRET.slice(-6),
+        initialPrivateState: { adminSecret: adminKeyBytes },
         signingKey: sampleSigningKey(),
       });
-      
+
       await submitTxAsync(session.providers as any, {
         unprovenTx: txData.private.unprovenTx,
       });
@@ -108,103 +119,157 @@ export default function AdminPage() {
     }
   }, [session, isConnected, deployedAddress]);
 
-  if (!isConnected) {
-    return (
-      <div className="page-container flex-center">
-        <div className="card text-center max-w-md mx-auto">
-          <Settings size={48} className="text-secondary mx-auto mb-md text-cyan-400" />
-          <h2 className="title-md">Admin Portal</h2>
-          <p className="text-secondary mb-lg">Please connect your 1AM wallet on the Preprod network to deploy or manage contracts.</p>
-          <button className="btn btn-primary btn-block" onClick={() => connect(config.networkId)}>
-            Connect Wallet
-          </button>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="page-container">
-      <div className="max-w-2xl mx-auto">
-        <div className="mb-xl">
-          <h1 className="title-lg mb-sm">Admin Settings</h1>
-          <p className="text-secondary">Deploy or manage the VaultProof voting contract on Midnight Preprod.</p>
-        </div>
-
-        <div className="card border-accent mb-lg">
-          <h2 className="title-md mb-sm flex items-center">
-            <Settings size={20} className="mr-sm text-cyan-400" /> Deploy New Poll
-          </h2>
-          <p className="text-secondary mb-lg">
-            Deploy a new VaultProof contract to the network. This initializes a tamper-proof poll with a zeroed nullifier set.
+      <div className="max-w-3xl mx-auto">
+        {/* Title Header */}
+        <div className="text-center mb-xl">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-mono font-medium mb-sm">
+            <Settings size={13} />
+            OBSIDIAN CONTROL PLANE
+          </div>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-white mb-xs">
+            Governance Administration
+          </h1>
+          <p className="text-secondary text-sm">
+            Smart contract deployment, admin authorization, and poll lifecycle management on Midnight Preprod.
           </p>
-
-          <button 
-            className="btn btn-primary btn-block mb-md" 
-            onClick={handleDeploy}
-            disabled={status === 'deploying' || status === 'closing'}
-          >
-            {status === 'deploying' ? (
-              <><Loader2 className="spinner-icon mr-sm animate-spin" size={18} /> Deploying via 1AM...</>
-            ) : 'Deploy Contract'}
-          </button>
         </div>
 
-        {deployedAddress && (
-          <div className="card border-accent">
-            <h2 className="title-md mb-sm flex items-center">
-              <Lock size={20} className="mr-sm text-cyan-400" /> Manage Poll
-            </h2>
-            <p className="text-secondary mb-lg">
-              Active contract: <code className="text-xs bg-slate-900 border border-slate-800 p-1.5 rounded font-mono text-cyan-400">{deployedAddress.slice(0,16)}...{deployedAddress.slice(-8)}</code>
+        {/* 1. Wallet Status Warning */}
+        {!isConnected && (
+          <div className="glass-card mb-lg border-amber-500/30 bg-amber-500/5 text-center p-6 rounded-xl">
+            <AlertCircle size={28} className="text-amber-400 mx-auto mb-xs" />
+            <h3 className="font-bold text-white mb-1">Admin Wallet Connection Required</h3>
+            <p className="text-secondary text-sm mb-md">
+              Connect your authorized 1AM or Lace wallet to execute administrative circuits.
             </p>
-
-            <div className="flex gap-2 mb-lg">
-              <button 
-                className="btn btn-secondary flex-1 flex items-center justify-center gap-1 text-xs"
-                onClick={copyAddress}
-              >
-                <Copy size={14} />
-                {copied ? 'Copied Address!' : 'Copy Contract Address'}
-              </button>
-              <a
-                href={`https://explorer.1am.xyz/contract/${deployedAddress}?network=preprod`}
-                target="_blank"
-                rel="noreferrer"
-                className="btn btn-secondary flex-1 flex items-center justify-center gap-1 text-xs"
-              >
-                <ExternalLink size={14} />
-                View on 1AM Explorer
-              </a>
-            </div>
-
-            <button 
-              className="btn btn-error btn-block" 
-              onClick={handleClosePoll}
-              disabled={status === 'deploying' || status === 'closing'}
+            <button
+              onClick={connect}
+              disabled={isConnecting}
+              className="btn btn-primary btn-sm mx-auto"
             >
-              {status === 'closing' ? (
-                <><Loader2 className="spinner-icon mr-sm animate-spin" size={18} /> Finalizing Poll...</>
-              ) : 'Finalize & Close Poll'}
+              {isConnecting ? 'Connecting...' : 'Connect 1AM Wallet'}
             </button>
           </div>
         )}
 
-        {status === 'success' && (
-          <div className="result-box success mt-lg">
-            <CheckCircle size={24} className="mb-sm text-emerald-400" />
-            <div className="result-title">Transaction Confirmed!</div>
-            <div className="result-desc">
-              Your administrative transaction has been confirmed on the Midnight Preprod ledger.
+        {/* 2. Deployed Contract Telemetry Card */}
+        <div className="glass-card p-6 rounded-2xl mb-lg">
+          <div className="flex items-center justify-between mb-md pb-md border-b border-white/5 flex-wrap gap-2">
+            <div className="flex items-center gap-2">
+              <Database size={18} className="text-accent" />
+              <h2 className="text-lg font-bold text-white">Active Contract Status</h2>
             </div>
+            <span className="text-xs font-mono px-2 py-0.5 rounded bg-white/5 text-cyan-300 border border-white/10">
+              Midnight Preprod
+            </span>
+          </div>
+
+          <div className="space-y-3 text-xs mb-md">
+            <div>
+              <span className="text-muted block mb-1">Contract Address:</span>
+              <div className="flex items-center gap-2 p-2.5 bg-black/40 rounded-lg border border-white/5 font-mono text-white text-[11px] break-all">
+                <span>{deployedAddress || 'No active deployment registered'}</span>
+                {deployedAddress && (
+                  <button onClick={copyAddress} className="text-muted hover:text-accent ml-auto flex-shrink-0">
+                    {copied ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {deployedAddress && (
+              <div className="flex items-center justify-between text-xs">
+                <span className="text-muted">Explorer Link:</span>
+                <a
+                  href={`https://explorer.1am.xyz/contract/${deployedAddress}?network=preprod`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-accent hover:underline inline-flex items-center gap-1 font-mono"
+                >
+                  View on 1AM Explorer <ExternalLink size={12} />
+                </a>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* 3. Action Grid: Deploy New & Finalize Poll */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-lg">
+          {/* Card: Deploy Fresh Contract */}
+          <div className="glass-card p-5 rounded-xl flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-white font-bold mb-xs">
+                <Rocket size={18} className="text-cyan-400" />
+                <span>Deploy New Contract</span>
+              </div>
+              <p className="text-secondary text-xs mb-md">
+                Deploy a fresh instance of the Compact voting contract initializing public tallies to 0.
+              </p>
+            </div>
+            <button
+              onClick={handleDeploy}
+              disabled={!isConnected || status === 'deploying' || status === 'closing'}
+              className="btn btn-secondary btn-sm w-full flex items-center justify-center gap-2"
+            >
+              {status === 'deploying' ? (
+                <>
+                  <Loader2 size={14} className="animate-spin" />
+                  <span>Deploying on Preprod...</span>
+                </>
+              ) : (
+                <>
+                  <Rocket size={14} />
+                  <span>Deploy Voting Contract</span>
+                </>
+              )}
+            </button>
+          </div>
+
+          {/* Card: Close Poll Circuit */}
+          <div className="glass-card p-5 rounded-xl border-rose-500/20 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 text-white font-bold mb-xs">
+                <Lock size={18} className="text-rose-400" />
+                <span>Finalize Poll (Close)</span>
+              </div>
+              <p className="text-secondary text-xs mb-md">
+                Executes the close_poll ZK circuit authenticated by the admin secret witness key.
+              </p>
+            </div>
+            <button
+              onClick={handleClosePoll}
+              disabled={!isConnected || !deployedAddress || status === 'deploying' || status === 'closing'}
+              className="btn btn-accent-ghost btn-sm w-full flex items-center justify-center gap-2 border-rose-500/30 text-rose-300 hover:bg-rose-500/20"
+            >
+              {status === 'closing' ? (
+                <>
+                  <Loader2 size={14} className="animate-spin text-rose-400" />
+                  <span>Submitting Close Proof...</span>
+                </>
+              ) : (
+                <>
+                  <Lock size={14} />
+                  <span>Execute close_poll</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+
+        {/* 4. Status Notification */}
+        {status === 'success' && (
+          <div className="glass-card p-4 rounded-xl border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs flex items-center gap-2">
+            <CheckCircle2 size={18} className="text-emerald-400" />
+            <span>Administrative transaction submitted and confirmed on Midnight Preprod!</span>
           </div>
         )}
 
         {status === 'error' && errorMsg && (
-          <div className="result-box error mt-lg">
-            <AlertCircle size={24} className="mb-sm text-red-400" />
-            <div className="result-title">Admin Action Failed</div>
-            <div className="result-desc break-words">{errorMsg}</div>
+          <div className="glass-card p-4 rounded-xl border-rose-500/40 bg-rose-500/10 text-rose-300 text-xs flex items-start gap-2">
+            <AlertCircle size={18} className="text-rose-400 flex-shrink-0 mt-0.5" />
+            <span className="break-words">{errorMsg}</span>
           </div>
         )}
       </div>
