@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128" fill="none">
+  <defs>
+    <linearGradient id="vp-icon-shield" x1="16" y1="16" x2="112" y2="112" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#00F5D4" />
+      <stop offset="50%" stopColor="#3B82F6" />
+      <stop offset="100%" stopColor="#6366F1" />
+    </linearGradient>
+
+    <linearGradient id="vp-icon-core" x1="48" y1="46" x2="80" y2="82" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="100%" stopColor="#00F5D4" />
+    </linearGradient>
+
+    <linearGradient id="vp-icon-facet" x1="64" y1="14" x2="64" y2="114" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#00F5D4" stop-opacity="0.35" />
+      <stop offset="100%" stopColor="#6366F1" stop-opacity="0.08" />
+    </linearGradient>
+
+    <filter id="vp-icon-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3.5" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background container -->
+  <rect width="128" height="128" rx="28" fill="#07090E" />
+  <rect width="126" height="126" x="1" y="1" rx="27" stroke="rgba(255,255,255,0.08)" stroke-width="1" />
+
+  <!-- Outer Vault Shield Hexagon -->
+  <path
+    d="M64 16L108 34V68C108 92 88 111 64 118C40 111 20 92 20 68V34L64 16Z"
+    fill="url(#vp-icon-facet)"
+    stroke="url(#vp-icon-shield)"
+    stroke-width="3.5"
+    stroke-linejoin="round"
+    filter="url(#vp-icon-glow)"
+  />
+
+  <!-- Facet Depth Lines -->
+  <path
+    d="M64 16V68M64 118V68M108 68H20"
+    stroke="url(#vp-icon-shield)"
+    stroke-width="1.8"
+    stroke-opacity="0.4"
+  />
+
+  <!-- Inner ZK Iris -->
+  <circle
+    cx="64"
+    cy="68"
+    r="20"
+    fill="#07090E"
+    stroke="url(#vp-icon-shield)"
+    stroke-width="3"
+  />
+
+  <!-- Keyhole Core -->
+  <circle cx="64" cy="63" r="6" fill="url(#vp-icon-core)" />
+  <path d="M60 67L57 80H71L68 67H60Z" fill="url(#vp-icon-core)" />
+
+  <!-- Orbiting Verification Nodes -->
+  <circle cx="64" cy="31" r="3.5" fill="#00F5D4" />
+  <circle cx="94" cy="56" r="3.5" fill="#3B82F6" />
+  <circle cx="34" cy="56" r="3.5" fill="#6366F1" />
+</svg>

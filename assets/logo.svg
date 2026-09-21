@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="100" viewBox="0 0 400 100" fill="none">
+  <defs>
+    <linearGradient id="vp-brand-shield" x1="10" y1="10" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#00F5D4" />
+      <stop offset="50%" stopColor="#3B82F6" />
+      <stop offset="100%" stopColor="#6366F1" />
+    </linearGradient>
+
+    <linearGradient id="vp-brand-core" x1="36" y1="34" x2="54" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#FFFFFF" />
+      <stop offset="100%" stopColor="#00F5D4" />
+    </linearGradient>
+
+    <linearGradient id="vp-brand-facet" x1="45" y1="10" x2="45" y2="90" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#00F5D4" stop-opacity="0.3" />
+      <stop offset="100%" stopColor="#6366F1" stop-opacity="0.05" />
+    </linearGradient>
+
+    <linearGradient id="vp-text-grad" x1="190" y1="30" x2="280" y2="65" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stopColor="#00F5D4" />
+      <stop offset="100%" stopColor="#3B82F6" />
+    </linearGradient>
+
+    <filter id="vp-glow-filter" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Dark container background for contrast -->
+  <rect width="400" height="100" rx="16" fill="#07090E" />
+  <rect width="398" height="98" x="1" y="1" rx="15" stroke="rgba(255,255,255,0.06)" stroke-width="1" />
+
+  <!-- Vault Shield Emblem -->
+  <g transform="translate(10, 5)">
+    <!-- Outer Vault Shield Hexagon -->
+    <path
+      d="M45 10L78 24V50C78 68 63 83 45 88C27 83 12 68 12 50V24L45 10Z"
+      fill="url(#vp-brand-facet)"
+      stroke="url(#vp-brand-shield)"
+      stroke-width="3"
+      stroke-linejoin="round"
+      filter="url(#vp-glow-filter)"
+    />
+
+    <!-- Facet Inner Lines -->
+    <path
+      d="M45 10V50M45 88V50M78 50H12"
+      stroke="url(#vp-brand-shield)"
+      stroke-width="1.5"
+      stroke-opacity="0.35"
+    />
+
+    <!-- Inner Iris -->
+    <circle
+      cx="45"
+      cy="50"
+      r="15"
+      fill="#07090E"
+      stroke="url(#vp-brand-shield)"
+      stroke-width="2.5"
+    />
+
+    <!-- Keyhole Core -->
+    <circle cx="45" cy="46" r="4.5" fill="url(#vp-brand-core)" />
+    <path d="M42 49L40 59H50L48 49H42Z" fill="url(#vp-brand-core)" />
+
+    <!-- Satellite Verification Nodes -->
+    <circle cx="45" cy="22" r="2.5" fill="#00F5D4" />
+    <circle cx="67" cy="41" r="2.5" fill="#3B82F6" />
+    <circle cx="23" cy="41" r="2.5" fill="#6366F1" />
+  </g>
+
+  <!-- Typography -->
+  <g transform="translate(112, 0)">
+    <!-- Brand Name: VaultProof -->
+    <text x="0" y="54" font-family="'Outfit', 'Inter', -apple-system, sans-serif" font-weight="800" font-size="36" letter-spacing="-0.5" fill="#F8FAFC">
+      Vault<tspan fill="url(#vp-text-grad)">Proof</tspan>
+    </text>
+
+    <!-- Subtitle / Tagline -->
+    <text x="2" y="74" font-family="'JetBrains Mono', monospace" font-weight="600" font-size="10.5" letter-spacing="3.2" fill="#64748B" text-transform="uppercase">
+      ZERO-KNOWLEDGE GOVERNANCE
+    </text>
+
+    <!-- Network Chip -->
+    <rect x="210" y="32" width="70" height="20" rx="10" fill="rgba(0, 245, 212, 0.1)" stroke="rgba(0, 245, 212, 0.3)" stroke-width="1" />
+    <circle cx="220" cy="42" r="3" fill="#00F5D4" />
+    <text x="228" y="46" font-family="'JetBrains Mono', monospace" font-size="8.5" font-weight="700" fill="#00F5D4" letter-spacing="1">PREPROD</text>
+  </g>
+</svg>
