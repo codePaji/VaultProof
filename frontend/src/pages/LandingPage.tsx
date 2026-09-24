@@ -9,11 +9,9 @@ import {
   Copy, 
   Check, 
   ExternalLink, 
-  Terminal, 
   KeyRound, 
   FileCheck2, 
   Fingerprint, 
-  Layers, 
   RefreshCw,
   EyeOff,
   Database,
@@ -21,7 +19,12 @@ import {
 } from 'lucide-react';
 import { config } from '../config';
 
-// Rotating headline phrases inspired by animated-text-rotate-hero
+// UI Components
+import { HeroGeometric } from '../components/ui/HeroGeometric';
+import { BentoGrid, BentoCard } from '../components/ui/BentoGrid';
+import { GlowingButton } from '../components/ui/GlowingButton';
+import { TerminalMac } from '../components/ui/TerminalMac';
+
 const ROTATING_PHRASES = [
   { text: 'Vote Anonymously.', highlight: 'Verify Publicly.' },
   { text: 'Prove Confidentially.', highlight: 'Shield Your Voice.' },
@@ -38,11 +41,10 @@ export default function LandingPage() {
   const [sandboxStatus, setSandboxStatus] = useState<'idle' | 'proving' | 'success'>('idle');
   const [sandboxReceipt, setSandboxReceipt] = useState<string | null>(null);
 
-  // Rotating headline effect
   useEffect(() => {
     const timer = setInterval(() => {
       setHeadlineIndex((prev) => (prev + 1) % ROTATING_PHRASES.length);
-    }, 3800);
+    }, 4000);
     return () => clearInterval(timer);
   }, []);
 
@@ -60,7 +62,7 @@ export default function LandingPage() {
       const mockNullifier = '0x' + Array.from({ length: 16 }, () => Math.floor(Math.random() * 16).toString(16)).join('');
       setSandboxReceipt(mockNullifier);
       setSandboxStatus('success');
-    }, 1800);
+    }, 2200);
   };
 
   const resetSandbox = () => {
@@ -73,7 +75,6 @@ export default function LandingPage() {
     ? `${config.contractAddress.slice(0, 10)}...${config.contractAddress.slice(-8)}`
     : '39767f26...33332f';
 
-  // Stepper Content
   const protocolSteps = [
     {
       title: 'Witness Acquisition',
@@ -102,375 +103,361 @@ export default function LandingPage() {
   ];
 
   return (
-    <div className="landing-page">
-      {/* 1. HERO SECTION (Inspired by helix-vault-h55 & animated-text-rotate-hero) */}
-      <section className="hero-container">
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+    <div className="landing-page bg-main text-white font-sans overflow-hidden">
+      
+      {/* 1. HERO SECTION (Geometric) */}
+      <HeroGeometric 
+        headline={
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={headlineIndex}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
+              className="inline-block"
+            >
+              {ROTATING_PHRASES[headlineIndex].text}
+            </motion.span>
+          </AnimatePresence>
+        }
+        highlight={
+          <AnimatePresence mode="wait">
+            <motion.span
+              key={headlineIndex}
+              initial={{ opacity: 0, filter: 'blur(8px)' }}
+              animate={{ opacity: 1, filter: 'blur(0px)' }}
+              exit={{ opacity: 0, filter: 'blur(8px)' }}
+              transition={{ duration: 0.6, delay: 0.1 }}
+              className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-accent via-cyan-400 to-indigo-500"
+            >
+              {ROTATING_PHRASES[headlineIndex].highlight}
+            </motion.span>
+          </AnimatePresence>
+        }
+        description="Cast confidential ballots with mathematical certainty. Built on Midnight's Compact smart contract framework, ensuring voter privacy while delivering 100% public, auditable on-chain tallies."
+      >
+        <GlowingButton to="/vote" variant="primary">
+          Enter Voting Booth <ChevronRight size={18} />
+        </GlowingButton>
+        <GlowingButton to="/results" variant="secondary">
+          View Live Tallies
+        </GlowingButton>
+      </HeroGeometric>
+
+      {/* Contract & Explorer Chip */}
+      <div className="relative z-20 flex justify-center mt-[-3rem] mb-24">
+        <div className="flex items-center gap-3 px-5 py-2.5 rounded-full bg-black/50 border border-white/10 backdrop-blur-xl shadow-glass">
+          <Fingerprint size={16} className="text-accent" />
+          <span className="text-sm font-mono text-secondary">CONTRACT:</span>
+          <span className="text-sm font-mono text-white tracking-wide">{contractDisplay}</span>
+          <div className="w-px h-4 bg-white/20 mx-1" />
+          <button 
+            onClick={handleCopyContract} 
+            className="text-secondary hover:text-white transition-colors"
+            title="Copy Contract Address"
+          >
+            {copiedContract ? <Check size={16} className="text-accent" /> : <Copy size={16} />}
+          </button>
+          <a
+            href={`https://explorer.1am.xyz/contract/${config.contractAddress || '39767f264df7b2da4ea9ce24b3900f148517c564ec9efbffecad33edcd33332f'}?network=preprod`}
+            target="_blank"
+            rel="noreferrer"
+            className="text-secondary hover:text-white transition-colors ml-1"
+            title="View on 1AM Explorer"
+          >
+            <ExternalLink size={16} />
+          </a>
+        </div>
+      </div>
+
+      {/* 2. ZK TERMINAL (Mac Window) */}
+      <section className="py-16 px-6 relative z-10">
+        <TerminalMac 
+          title="midnight-node-verifier" 
+          status={<span className="text-accent animate-pulse">● LIVE</span>}
         >
-          {/* Top Pill Badge */}
-          <div className="hero-pill-badge">
-            <span className="nav-status-dot" />
-            <span>MIDNIGHT NETWORK · ZERO-KNOWLEDGE GOVERNANCE</span>
+          <div className="flex flex-col gap-2 font-mono">
+            <div className="text-secondary">[SYS] Loading Compact Runtime v0.31.0...</div>
+            <div className="text-secondary">[SYS] Connected to Midnight Preprod Data Provider</div>
+            <div className="text-cyan-400">[ZK] Generating ephemeral witness commitment...</div>
+            <div className="text-indigo-300">❯ persistentHash([pad32("vaultproof:voter:v1"), voterSecret])</div>
+            <div className="text-white flex gap-2">
+              <span className="text-accent">✔</span>
+              <span>Constraint evaluation: choice in [0, 1] -&gt; PASS</span>
+            </div>
+            <div className="text-white flex gap-2">
+              <span className="text-accent">✔</span>
+              <span>Sybil check: has_voted.member(nullifier) == false</span>
+            </div>
+            <div className="text-emerald-400 font-bold mt-2">
+              [PROVER] Zero-Knowledge SNARK proof generated in 2,420ms
+            </div>
+            <div className="text-white flex items-center gap-2 mt-1">
+              <span className="w-2 h-4 bg-white/70 animate-pulse" />
+              <span className="opacity-70">Awaiting wallet signature...</span>
+            </div>
           </div>
-
-          {/* Dynamic Rotating Headline */}
-          <h1 className="hero-headline">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={headlineIndex}
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -15 }}
-                transition={{ duration: 0.4 }}
-              >
-                <span>{ROTATING_PHRASES[headlineIndex].text}</span>
-                <br />
-                <span className="text-gradient">
-                  {ROTATING_PHRASES[headlineIndex].highlight}
-                </span>
-              </motion.div>
-            </AnimatePresence>
-          </h1>
-
-          <p className="hero-description">
-            Cast confidential ballots with mathematical certainty. Built on Midnight's Compact smart contract framework, ensuring voter privacy while delivering 100% public, auditable on-chain tallies.
-          </p>
-
-          {/* Contract Address Chip with Copy & Explorer Links */}
-          <div className="contract-chip">
-            <Fingerprint size={14} className="text-accent" />
-            <span>CONTRACT:</span>
-            <span className="text-white font-medium">{contractDisplay}</span>
-            <button 
-              onClick={handleCopyContract} 
-              className="text-muted hover:text-accent transition-colors"
-              title="Copy Contract Address"
-            >
-              {copiedContract ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-            </button>
-            <a
-              href={`https://explorer.1am.xyz/contract/${config.contractAddress || '39767f264df7b2da4ea9ce24b3900f148517c564ec9efbffecad33edcd33332f'}?network=preprod`}
-              target="_blank"
-              rel="noreferrer"
-              className="text-muted hover:text-accent transition-colors"
-              title="View on 1AM Explorer"
-            >
-              <ExternalLink size={13} />
-            </a>
-          </div>
-
-          {/* Primary CTA Buttons */}
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link to="/vote" className="btn btn-primary btn-lg">
-              Enter Voting Booth
-              <ChevronRight size={18} />
-            </Link>
-            <Link to="/results" className="btn btn-secondary btn-lg">
-              View Live Tallies
-            </Link>
-          </div>
-        </motion.div>
+        </TerminalMac>
       </section>
 
-      {/* 2. ZK TERMINAL & CONSOLE PREVIEW (Inspired by aegis-console-h39) */}
-      <section className="zk-terminal-wrapper">
-        <div className="terminal-header">
-          <div className="terminal-dots">
-            <span className="terminal-dot dot-red" />
-            <span className="terminal-dot dot-yellow" />
-            <span className="terminal-dot dot-green" />
-          </div>
-          <div className="terminal-title">
-            Midnight Compact Prover Engine v0.31.0 · Circuit: cast_vote
-          </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-emerald-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            PROVER ONLINE
-          </div>
-        </div>
-
-        <div className="terminal-body">
-          {/* Left Circuit State */}
-          <div className="circuit-flow-panel">
-            <div className="circuit-step-box active">
-              <div className="flex items-center gap-2">
-                <KeyRound size={16} className="text-accent" />
-                <span className="font-semibold text-white">Private Witness Input</span>
-              </div>
-              <span className="text-xs font-mono text-accent">DISCLOSED: 0%</span>
-            </div>
-
-            <div className="circuit-step-box active">
-              <div className="flex items-center gap-2">
-                <Fingerprint size={16} className="text-cyan-400" />
-                <span className="font-semibold text-white">Nullifier Derivation</span>
-              </div>
-              <span className="text-xs font-mono text-cyan-400">ONE-WAY HASH</span>
-            </div>
-
-            <div className="circuit-step-box active">
-              <div className="flex items-center gap-2">
-                <ShieldCheck size={16} className="text-emerald-400" />
-                <span className="font-semibold text-white">R1CS Constraint Check</span>
-              </div>
-              <span className="text-xs font-mono text-emerald-400">VERIFIED</span>
-            </div>
-
-            <div className="circuit-step-box active">
-              <div className="flex items-center gap-2">
-                <Database size={16} className="text-indigo-400" />
-                <span className="font-semibold text-white">On-Chain Ledger Commit</span>
-              </div>
-              <span className="text-xs font-mono text-indigo-400">PREPROD</span>
-            </div>
-          </div>
-
-          {/* Right Live Proving Logs */}
-          <div className="terminal-log-stream">
-            <div className="log-line log-muted">[INIT] Loading WASM Compact Runtime...</div>
-            <div className="log-line">[SYS] Connecting to Midnight Preprod Public Data Provider</div>
-            <div className="log-line log-cyan">[ZK] Generating ephemeral witness commitment...</div>
-            <div className="log-line">[HASH] persistentHash([pad32("vaultproof:voter:v1"), voterSecret])</div>
-            <div className="log-line log-purple">[CIRCUIT] Constraint evaluation: choice in [0, 1] -&gt; PASS</div>
-            <div className="log-line log-cyan">[NULLIFIER] Sybil check: has_voted.member(nullifier) == false</div>
-            <div className="log-line log-cyan">[PROVER] Zero-Knowledge SNARK proof generated in 2,420ms</div>
-            <div className="log-line text-emerald-400">[READY] Unproven transaction prepared for 1AM wallet submission_</div>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. TELEMETRY HUD STRIP (Inspired by axis-quotient-h30 & finsyc) */}
-      <section className="telemetry-strip">
-        <div className="telemetry-cell">
-          <div className="telemetry-val text-gradient">100%</div>
-          <div className="telemetry-lbl">Voter Anonymity</div>
-          <div className="text-xs text-muted">Witness stays on local device</div>
-        </div>
-        <div className="telemetry-cell">
-          <div className="telemetry-val">~2.4s</div>
-          <div className="telemetry-lbl">Client Proving Speed</div>
-          <div className="text-xs text-muted">On-device ZK constraint synthesis</div>
-        </div>
-        <div className="telemetry-cell">
-          <div className="telemetry-val text-emerald-400">Sybil-Proof</div>
-          <div className="telemetry-lbl">Double-Vote Prevention</div>
-          <div className="text-xs text-muted">Deterministic nullifiers on-chain</div>
-        </div>
-        <div className="telemetry-cell">
-          <div className="telemetry-val text-cyan-400">Preprod</div>
-          <div className="telemetry-lbl">Network Status</div>
-          <div className="text-xs text-muted">1AM Wallet & Indexer v4 sync</div>
-        </div>
-      </section>
-
-      {/* 4. ASYMMETRIC BENTO GRID (Inspired by lumen-design-system) */}
-      <section className="mb-2xl">
-        <div className="text-center max-w-xl mx-auto mb-xl">
-          <h2 className="text-3xl font-bold mb-xs">Engineered for Trustless Governance</h2>
-          <p className="text-secondary text-sm">
+      {/* 3. BENTO GRID */}
+      <section className="py-24 relative z-10">
+        <div className="text-center max-w-2xl mx-auto mb-16 px-6">
+          <h2 className="text-4xl font-display font-bold mb-4">Engineered for Trustless Governance</h2>
+          <p className="text-lg text-secondary">
             Four fundamental pillars of Midnight's zero-knowledge execution layer protecting your ballot.
           </p>
         </div>
 
-        <div className="bento-grid">
-          {/* Card 1: Witness Boundary (Span 2) */}
-          <div className="bento-card bento-col-2">
-            <div className="bento-icon-box">
-              <EyeOff size={22} />
+        <BentoGrid>
+          <BentoCard 
+            title="Cryptographic Witness Isolation"
+            description="Your ballot selection and identity secret exist exclusively inside your browser's private witness memory. They never touch the network."
+            icon={<EyeOff />}
+            className="md:col-span-2"
+          >
+            <div className="mt-4 p-4 bg-black/40 rounded-xl border border-white/5 font-mono text-xs text-accent backdrop-blur-sm">
+              <code>witness voterSecret(): Bytes&lt;32&gt;; // Never leaves device</code>
             </div>
-            <h3 className="bento-title">Cryptographic Witness Isolation</h3>
-            <p className="bento-desc">
-              In traditional blockchain voting, every address and transaction payload is transparently visible to all observers. In VaultProof, your ballot selection and identity secret exist exclusively inside your browser's private witness memory.
-            </p>
-            <div className="p-3 bg-black/40 rounded-lg border border-white/5 font-mono text-xs text-accent">
-              <code>witness voterSecret(): Bytes&lt;32&gt;; // Never crosses network boundary</code>
-            </div>
-          </div>
+          </BentoCard>
 
-          {/* Card 2: Sybil Nullifiers */}
-          <div className="bento-card">
-            <div className="bento-icon-box">
-              <Fingerprint size={22} />
+          <BentoCard 
+            title="Sybil Nullifiers"
+            description="Deterministic hashes guarantee one-person-one-vote without revealing voter identity."
+            icon={<Fingerprint />}
+          >
+            <div className="mt-4 flex flex-col gap-2">
+              <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div className="h-full bg-gradient-to-r from-accent to-cyan-400 w-[100%]" />
+              </div>
+              <span className="text-xs font-mono text-cyan-400">vaultproof:voter:v1</span>
             </div>
-            <h3 className="bento-title">Sybil Nullifiers</h3>
-            <p className="bento-desc">
-              One-way deterministic hashes guarantee one-person-one-vote without revealing which voter cast the ballot.
-            </p>
-            <span className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded inline-block">
-              Domain: vaultproof:voter:v1
-            </span>
-          </div>
+          </BentoCard>
 
-          {/* Card 3: Verifiable Tallies */}
-          <div className="bento-card">
-            <div className="bento-icon-box">
-              <ShieldCheck size={22} />
-            </div>
-            <h3 className="bento-title">Auditable Ledger Tallies</h3>
-            <p className="bento-desc">
-              Every vote updates public on-chain counters on the Midnight ledger. Anyone can query the GraphQL indexer to audit results in real time.
-            </p>
-            <span className="text-xs font-mono text-cyan-400 bg-cyan-500/10 px-2 py-1 rounded inline-block">
-              Indexer GraphQL API v4
-            </span>
-          </div>
-
-          {/* Card 4: Receipts (Span 2) */}
-          <div className="bento-card bento-col-2">
-            <div className="bento-icon-box">
-              <FileCheck2 size={22} />
-            </div>
-            <h3 className="bento-title">Tamper-Evident Vote Receipts</h3>
-            <p className="bento-desc">
-              Upon successful ballot submission, VaultProof generates an encrypted, 32-bit polynomial checksum receipt. Voters can mathematically prove their ballot was included without ever disclosing whether they voted Yes or No.
-            </p>
-            <div className="flex items-center gap-3">
-              <span className="text-xs font-mono text-accent bg-accent/10 px-2.5 py-1 rounded">
-                Checksum Verification
+          <BentoCard 
+            title="Auditable Ledger"
+            description="Every vote updates public on-chain counters on the Midnight ledger. Anyone can query the GraphQL indexer."
+            icon={<Database />}
+          >
+            <div className="mt-4 flex gap-2">
+              <span className="inline-block px-3 py-1 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 text-xs font-mono">
+                GraphQL v4
               </span>
-              <span className="text-xs font-mono text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded">
+              <span className="inline-block px-3 py-1 rounded bg-white/5 border border-white/10 text-secondary text-xs font-mono">
+                Preprod
+              </span>
+            </div>
+          </BentoCard>
+
+          <BentoCard 
+            title="Tamper-Evident Receipts"
+            description="VaultProof generates an encrypted polynomial checksum receipt. Voters can mathematically prove their ballot was included without disclosing their choice."
+            icon={<FileCheck2 />}
+            className="md:col-span-2"
+          >
+            <div className="mt-4 flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10">
+              <div className="flex items-center gap-3">
+                <ShieldCheck className="text-emerald-400" size={20} />
+                <span className="text-sm font-medium">Mathematical Verification</span>
+              </div>
+              <span className="text-xs font-mono text-accent bg-accent/10 px-2.5 py-1 rounded-full">
                 Non-Repudiable
               </span>
             </div>
-          </div>
-        </div>
+          </BentoCard>
+        </BentoGrid>
       </section>
 
-      {/* 5. INTERACTIVE PROTOCOL STEPPER (Inspired by industrial-skeuomorphism) */}
-      <section className="protocol-stepper-box">
-        <div className="mb-lg">
-          <span className="text-xs font-mono text-accent uppercase tracking-wider">Protocol Pipeline</span>
-          <h2 className="text-2xl font-bold mt-xs">How Zero-Knowledge Governance Works</h2>
-        </div>
-
-        {/* Stepper Navigation Tabs */}
-        <div className="stepper-nav">
-          {protocolSteps.map((step, idx) => (
-            <button
-              key={idx}
-              onClick={() => setActiveStep(idx)}
-              className={`stepper-tab ${activeStep === idx ? 'active' : ''}`}
-            >
-              <span className="stepper-num">0{idx + 1}</span>
-              <span>{step.title}</span>
-            </button>
-          ))}
-        </div>
-
-        {/* Dynamic Step View */}
-        <div className="glass-card bg-black/40 border border-white/5 p-6 rounded-xl">
-          <div className="flex items-center justify-between mb-sm flex-wrap gap-2">
-            <span className="font-mono text-xs text-accent bg-accent/10 px-2.5 py-1 rounded">
-              {protocolSteps[activeStep].tag}
-            </span>
-            <code className="text-xs font-mono text-cyan-300 bg-white/5 px-2 py-0.5 rounded">
-              {protocolSteps[activeStep].codeLabel}
-            </code>
+      {/* 4. PROTOCOL PIPELINE TABS */}
+      <section className="py-24 px-6 relative z-10 border-y border-white/5 bg-gradient-to-b from-transparent to-[#0a0d16]">
+        <div className="max-w-5xl mx-auto">
+          <div className="mb-12 text-center md:text-left">
+            <span className="text-xs font-mono text-accent uppercase tracking-widest bg-accent/10 px-3 py-1 rounded-full">Protocol Pipeline</span>
+            <h2 className="text-3xl md:text-4xl font-bold mt-6 mb-4">How Zero-Knowledge Works</h2>
           </div>
-          <h3 className="text-xl font-bold text-white mb-xs">
-            {protocolSteps[activeStep].title}
-          </h3>
-          <p className="text-secondary text-sm leading-relaxed">
-            {protocolSteps[activeStep].description}
-          </p>
-        </div>
-      </section>
 
-      {/* 6. LIVE INTERACTIVE VOTING SANDBOX (Inspired by finsyc & abstract-glassy-shader) */}
-      <section className="sandbox-container">
-        <div className="max-w-xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent/10 text-accent text-xs font-mono font-medium mb-sm">
-            <Zap size={13} />
-            INTERACTIVE PROTOCOL SANDBOX
-          </div>
-          <h2 className="text-2xl md:text-3xl font-bold mb-xs">
-            Test the Zero-Knowledge Voting Flow
-          </h2>
-          <p className="text-secondary text-sm mb-lg">
-            Experience on-device proof generation in real-time. No wallet connection required for this sandbox preview.
-          </p>
-
-          {sandboxStatus === 'idle' && (
-            <div>
-              <div className="choice-grid">
+          <div className="flex flex-col md:flex-row gap-12">
+            {/* Nav */}
+            <div className="flex md:flex-col gap-2 overflow-x-auto pb-4 md:pb-0 md:w-1/3">
+              {protocolSteps.map((step, idx) => (
                 <button
-                  onClick={() => setSandboxChoice('yes')}
-                  className={`choice-card-btn ${sandboxChoice === 'yes' ? 'selected-yes' : ''}`}
+                  key={idx}
+                  onClick={() => setActiveStep(idx)}
+                  className={`flex items-center gap-4 text-left p-4 rounded-xl transition-all whitespace-nowrap md:whitespace-normal ${
+                    activeStep === idx 
+                      ? 'bg-white/10 border-l-2 border-accent text-white shadow-lg' 
+                      : 'hover:bg-white/5 border-l-2 border-transparent text-secondary'
+                  }`}
                 >
-                  <ShieldCheck size={20} className={sandboxChoice === 'yes' ? 'text-emerald-400' : 'text-muted'} />
-                  <span>Vote YES (Approve)</span>
+                  <span className={`font-mono text-sm ${activeStep === idx ? 'text-accent' : 'text-muted'}`}>0{idx + 1}</span>
+                  <span className="font-semibold text-sm md:text-base">{step.title}</span>
                 </button>
-                <button
-                  onClick={() => setSandboxChoice('no')}
-                  className={`choice-card-btn ${sandboxChoice === 'no' ? 'selected-no' : ''}`}
+              ))}
+            </div>
+
+            {/* Content */}
+            <div className="md:w-2/3">
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={activeStep}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  transition={{ duration: 0.3 }}
+                  className="bg-[#0d121f] border border-white/10 p-8 md:p-10 rounded-3xl shadow-2xl relative overflow-hidden h-full flex flex-col justify-center"
                 >
-                  <LockKeyhole size={20} className={sandboxChoice === 'no' ? 'text-rose-400' : 'text-muted'} />
-                  <span>Vote NO (Reject)</span>
-                </button>
-              </div>
-
-              <button
-                onClick={handleSimulateVote}
-                disabled={!sandboxChoice}
-                className="btn btn-primary btn-lg w-full max-w-sm mx-auto"
-              >
-                Simulate ZK Proof Generation
-                <ArrowRight size={18} />
-              </button>
+                  {/* Decorative glow */}
+                  <div className="absolute top-0 right-0 w-64 h-64 bg-accent opacity-5 blur-[100px] rounded-full" />
+                  
+                  <div className="relative z-10">
+                    <div className="flex flex-wrap items-center gap-3 mb-6">
+                      <span className="font-mono text-xs text-white bg-white/10 px-3 py-1 rounded-full border border-white/5">
+                        {protocolSteps[activeStep].tag}
+                      </span>
+                      <code className="text-xs font-mono text-accent">
+                        {protocolSteps[activeStep].codeLabel}
+                      </code>
+                    </div>
+                    <h3 className="text-3xl font-display font-bold text-white mb-4">
+                      {protocolSteps[activeStep].title}
+                    </h3>
+                    <p className="text-secondary text-lg leading-relaxed">
+                      {protocolSteps[activeStep].description}
+                    </p>
+                  </div>
+                </motion.div>
+              </AnimatePresence>
             </div>
-          )}
-
-          {sandboxStatus === 'proving' && (
-            <div className="p-8 text-center flex flex-col items-center gap-3">
-              <RefreshCw size={36} className="text-accent animate-spin" />
-              <div className="font-bold text-lg text-white">Synthesizing Zero-Knowledge Proof...</div>
-              <div className="text-xs font-mono text-secondary max-w-md">
-                Computing R1CS constraint matrix · Deriving deterministic nullifier · Evaluating witness boundaries
-              </div>
-            </div>
-          )}
-
-          {sandboxStatus === 'success' && (
-            <div className="receipt-card max-w-md mx-auto text-left">
-              <div className="flex items-center gap-2 text-emerald-400 text-sm font-bold mb-sm">
-                <Check size={18} />
-                <span>Zero-Knowledge Proof Verified!</span>
-              </div>
-              <div className="text-xs text-secondary mb-xs">
-                Ballot Choice: <span className="text-white font-semibold">ENCRYPTED INSIDE PROOF (ZERO LEAKAGE)</span>
-              </div>
-              <div className="text-xs text-secondary mb-xs">
-                Generated Nullifier: <code className="text-accent">{sandboxReceipt}</code>
-              </div>
-              <div className="text-xs text-secondary mb-md">
-                On-Chain Status: <span className="text-emerald-400 font-medium">Eligible & Ready to Commit</span>
-              </div>
-              <button onClick={resetSandbox} className="btn btn-secondary btn-sm w-full">
-                Reset Sandbox
-              </button>
-            </div>
-          )}
+          </div>
         </div>
       </section>
 
-      {/* 7. FINAL CALL TO ACTION */}
-      <section className="glass-card text-center py-12 px-6 border-accent/30 bg-gradient-to-b from-[#0D121F] to-[#07090E] rounded-2xl relative overflow-hidden">
-        <div className="max-w-2xl mx-auto">
-          <h2 className="text-3xl font-extrabold mb-sm">Ready to Cast Your Ballot?</h2>
-          <p className="text-secondary mb-lg">
-            Connect your 1AM or Lace wallet on Midnight Preprod to participate in live decentralized governance with absolute cryptographic privacy.
-          </p>
-          <div className="flex items-center justify-center gap-4 flex-wrap">
-            <Link to="/vote" className="btn btn-primary btn-lg">
-              Launch Voting Booth
-              <ChevronRight size={18} />
-            </Link>
-            <Link to="/about" className="btn btn-secondary btn-lg">
-              Read Security Specs
-            </Link>
+      {/* 5. INTERACTIVE SANDBOX */}
+      <section className="py-24 px-6 relative z-10">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-gradient-to-b from-[#131A2B] to-[#0A0E17] border border-white/10 rounded-[2.5rem] p-8 md:p-14 text-center shadow-2xl relative overflow-hidden">
+            {/* Glow effects */}
+            <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-indigo-500/20 blur-[80px] rounded-full pointer-events-none" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-accent/20 blur-[80px] rounded-full pointer-events-none" />
+            
+            <div className="relative z-10">
+              <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-mono font-medium mb-8">
+                <Zap size={14} />
+                INTERACTIVE SANDBOX
+              </div>
+              <h2 className="text-3xl md:text-4xl font-bold mb-4">
+                Test the ZK Voting Flow
+              </h2>
+              <p className="text-secondary text-lg mb-12 max-w-xl mx-auto">
+                Experience on-device proof generation in real-time. No wallet connection required.
+              </p>
+
+              {sandboxStatus === 'idle' && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-md mx-auto">
+                  <div className="grid grid-cols-2 gap-4 mb-8">
+                    <button
+                      onClick={() => setSandboxChoice('yes')}
+                      className={`p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-3 ${
+                        sandboxChoice === 'yes' 
+                          ? 'bg-emerald-500/10 border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.2)]' 
+                          : 'bg-black/40 border-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      <ShieldCheck size={28} className={sandboxChoice === 'yes' ? 'text-emerald-400' : 'text-muted'} />
+                      <span className="font-semibold text-sm">Vote YES</span>
+                    </button>
+                    <button
+                      onClick={() => setSandboxChoice('no')}
+                      className={`p-6 rounded-2xl border transition-all duration-300 flex flex-col items-center gap-3 ${
+                        sandboxChoice === 'no' 
+                          ? 'bg-rose-500/10 border-rose-500/50 shadow-[0_0_30px_rgba(244,63,94,0.2)]' 
+                          : 'bg-black/40 border-white/10 hover:border-white/30'
+                      }`}
+                    >
+                      <LockKeyhole size={28} className={sandboxChoice === 'no' ? 'text-rose-400' : 'text-muted'} />
+                      <span className="font-semibold text-sm">Vote NO</span>
+                    </button>
+                  </div>
+
+                  <GlowingButton 
+                    onClick={handleSimulateVote}
+                    disabled={!sandboxChoice}
+                    className="w-full"
+                  >
+                    Simulate ZK Proof <ArrowRight size={18} />
+                  </GlowingButton>
+                </motion.div>
+              )}
+
+              {sandboxStatus === 'proving' && (
+                <div className="py-12 flex flex-col items-center gap-6">
+                  <motion.div 
+                    animate={{ rotate: 360 }} 
+                    transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  >
+                    <RefreshCw size={48} className="text-accent" />
+                  </motion.div>
+                  <div className="font-display font-bold text-2xl text-white">Synthesizing Proof...</div>
+                  <div className="text-sm font-mono text-secondary max-w-sm">
+                    Computing R1CS constraints &middot; Deriving nullifier &middot; Evaluating witness
+                  </div>
+                </div>
+              )}
+
+              {sandboxStatus === 'success' && (
+                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} className="bg-black/50 border border-emerald-500/30 rounded-2xl p-8 max-w-md mx-auto text-left shadow-[0_0_50px_rgba(16,185,129,0.1)]">
+                  <div className="flex items-center gap-3 text-emerald-400 font-bold mb-6 pb-6 border-b border-white/5">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                      <Check size={20} />
+                    </div>
+                    <span className="text-lg">ZK Proof Verified!</span>
+                  </div>
+                  
+                  <div className="space-y-4 mb-8">
+                    <div>
+                      <div className="text-xs text-secondary uppercase tracking-wider mb-1 font-mono">Ballot Choice</div>
+                      <div className="text-sm font-medium text-white px-3 py-2 bg-white/5 rounded border border-white/5">ENCRYPTED INSIDE PROOF</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-secondary uppercase tracking-wider mb-1 font-mono">Generated Nullifier</div>
+                      <div className="text-sm font-mono text-accent px-3 py-2 bg-accent/5 rounded border border-accent/10 truncate">{sandboxReceipt}</div>
+                    </div>
+                    <div>
+                      <div className="text-xs text-secondary uppercase tracking-wider mb-1 font-mono">On-Chain Status</div>
+                      <div className="text-sm font-medium text-emerald-400">Eligible & Ready to Commit</div>
+                    </div>
+                  </div>
+                  
+                  <button onClick={resetSandbox} className="w-full py-3 rounded-xl bg-white/10 hover:bg-white/15 text-white font-medium transition-colors">
+                    Reset Sandbox
+                  </button>
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. CTA */}
+      <section className="py-24 px-6 relative z-10 flex justify-center">
+        <div className="relative group overflow-hidden rounded-[2.5rem] bg-[#0d121f] border border-white/10 p-12 md:p-20 text-center max-w-4xl w-full mx-auto">
+          {/* CTA Glow */}
+          <div className="absolute inset-0 bg-gradient-to-r from-accent/20 via-indigo-500/20 to-accent/20 opacity-50 group-hover:opacity-100 transition-opacity duration-1000 blur-xl" />
+          
+          <div className="relative z-10">
+            <h2 className="text-4xl md:text-5xl font-display font-extrabold mb-6">Ready to Cast Your Ballot?</h2>
+            <p className="text-xl text-secondary mb-10 max-w-2xl mx-auto">
+              Connect your 1AM wallet on Midnight Preprod to participate in live decentralized governance with absolute privacy.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <GlowingButton to="/vote" variant="primary">
+                Launch Voting Booth <ChevronRight size={18} />
+              </GlowingButton>
+              <GlowingButton to="/about" variant="secondary">
+                Read Security Specs
+              </GlowingButton>
+            </div>
           </div>
         </div>
       </section>
