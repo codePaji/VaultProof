@@ -3,6 +3,10 @@
    Inspired by Claude Directory (helix-vault-h55, aegis-console, lumen-system)
    ========================================================================== */
 
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* Obsidian & Cyber Palette */
   --bg-main: #07090E;
